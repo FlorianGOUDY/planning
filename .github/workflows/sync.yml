@@ -2,7 +2,7 @@ name: Synchro planning
 
 on:
   schedule:
-    - cron: "0 5 * * *"        # tous les jours vers 6h-7h (heure de Paris)
+    - cron: "17 3,9,15,21 * * *"   # 4 fois par jour
   workflow_dispatch:            # bouton "Run workflow" pour lancer à la main
   push:
     paths: [".github/workflows/sync.yml", "planning_ics.py"]
