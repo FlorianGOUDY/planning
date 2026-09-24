@@ -234,7 +234,7 @@ END:VTIMEZONE""".replace("\n", "\r\n")
 def build_ics(events, group, rooms_by_date):
     stamp = "20260901T000000Z"   # fixe : le fichier ne change que si le planning change
     L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//planning-itech//FR", "CALSCALE:GREGORIAN",
-         f"X-WR-CALNAME:ITECH 1 - {group}", f"X-WR-TIMEZONE:{TZ}", "REFRESH-INTERVAL;VALUE=DURATION:PT12H", "X-PUBLISHED-TTL:PT12H",
+         f"X-WR-CALNAME:ITECH 1 - {group}", f"X-WR-TIMEZONE:{TZ}", "REFRESH-INTERVAL;VALUE=DURATION:PT1H", "X-PUBLISHED-TTL:PT1H",
          VTZ]
     n = matched = need = 0
     for ev in events:
