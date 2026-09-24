@@ -3,10 +3,9 @@
 Planning ITECH 1 (Excel) + fichier des salles (Excel)  ->  calendrier .ics
 
 Usage :
-    python planning_ics.py --download --tous --outdir docs      # G1, G2, G3 + sous-groupes A/B (9 fichiers)
+    python planning_ics.py --download --tous --outdir docs      # télécharge les 2 Google Sheets publics
     python planning_ics.py PLANNING.xlsx SALLES.xlsx --tous      # ou à partir de fichiers locaux
     python planning_ics.py PLANNING.xlsx SALLES.xlsx --groupe G2 -o itech1_G2.ics
-    python planning_ics.py PLANNING.xlsx SALLES.xlsx --groupe G2 --sous-groupe B -o itech1_G2B.ics
 
 Dépendance : pip install openpyxl
 """
@@ -78,12 +77,8 @@ def content_lines(lines):
 
 
 def group_marker(text):
-    """Groupe et sous-groupe cités dans une réservation de salle : 'Grp 2A', 'G2 B', 'G3'..."""
     m = re.search(r"\b(?:g|grp|groupe)\s*([123])", norm(text))
-    if not m:
-        return None, None
-    sub = re.search(r"\b(?:G|Grp|Groupe)\s*[123]\s?([AB])\b(?![.'’])", text)   # 'G3 A.Allès' n'est pas un sous-groupe
-    return f"G{m.group(1)}", (sub.group(1) if sub else None)
+    return f"G{m.group(1)}" if m else None
 
 
 # ----------------------------------------------------------------- lecture du planning
@@ -116,20 +111,14 @@ def read_planning(path):
             day, off = divmod(c.row - FIRST_ROW, ROWS_PER_DAY)
             n_rows = r2 - c.row + 1
             groups = [g for g, (a, b) in GROUP_COLS.items() if p1 <= b and p2 >= a]
-            # sous-groupes : dans chaque groupe, A = 2 premières colonnes, B = 3e colonne
-            subs = {}
-            for g in groups:
-                a, b = GROUP_COLS[g]
-                lo, hi = max(p1, a) - a, min(p2, b) - a
-                subs[g] = ({"A"} if lo <= 1 else set()) | ({"B"} if hi >= 2 else set())
-                if len(groups) > 1:          # événement commun à plusieurs groupes : pas de sous-groupe
-                    subs[g] = {"A", "B"}
+            full = [g for g, (a, b) in GROUP_COLS.items() if p1 <= a and p2 >= b]
+            partial = any(g not in full for g in groups)
             base = starts[week] + dt.timedelta(days=day)
             text = str(c.value).strip()
             if off == 0 and n_rows >= ROWS_PER_DAY:      # jour(s) entier(s) : vacances, férié...
                 ndays = max(1, min(5 - day, round(n_rows / ROWS_PER_DAY)))
                 events.append(dict(date=base, end_date=base + dt.timedelta(days=ndays), allday=True,
-                                   text=text, groups=groups, subs=subs))
+                                   text=text, groups=groups, partial=partial))
                 continue
             r2 = min(r2, FIRST_ROW + (day + 1) * ROWS_PER_DAY - 1)
             start = DAY_START_MIN + 30 * off
@@ -141,12 +130,8 @@ def read_planning(path):
                 e2 = int(t.group(3)) * 60 + int(t.group(4) or 0)
                 if 6 * 60 <= s2 < e2 <= 22 * 60:
                     start, end = s2, e2
-            # sous-groupe écrit dans le titre d'un cours d'un seul groupe (ex. "TP Biblio 2A")
-            tm = re.search(r"(?<![A-Za-z0-9])([123])([AB])(?![A-Za-z0-9])", text.split("\n")[0])
-            if tm and len(groups) == 1 and f"G{tm.group(1)}" == groups[0]:
-                subs[groups[0]] = {tm.group(2)}
             events.append(dict(date=base, start=start, end=end, allday=False, text=text,
-                               groups=groups, subs=subs))
+                               groups=groups, partial=partial))
     return events
 
 
@@ -173,7 +158,7 @@ def read_rooms(path):
 
 
 # ----------------------------------------------------------------- jointure planning <-> salles
-def find_rooms(ev, group, rooms_by_date, sub=None):
+def find_rooms(ev, group, rooms_by_date):
     if ev["allday"]:
         return []
     lines = [l.strip() for l in ev["text"].split("\n") if l.strip()]
@@ -193,11 +178,8 @@ def find_rooms(ev, group, rooms_by_date, sub=None):
             continue
         if not tok_match(title_tok, set().union(*[tokens(l) for l in content_lines(rl)[:1]])):
             continue
-        mk, msub = group_marker(r["text"])
+        mk = group_marker(r["text"])
         if mk and group and mk != group:
-            continue
-        want = {sub} if sub else ev["subs"].get(group, set())
-        if msub and len(want) == 1 and msub not in want:
             continue
         rt = teachers(rl)
         if ev_teachers and rt and not (ev_teachers & rt):
@@ -249,25 +231,21 @@ END:STANDARD
 END:VTIMEZONE""".replace("\n", "\r\n")
 
 
-def build_ics(events, group, rooms_by_date, sub=None):
-    label = group + (sub or "")
+def build_ics(events, group, rooms_by_date):
     stamp = "20260901T000000Z"   # fixe : le fichier ne change que si le planning change
     L = ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//planning-itech//FR", "CALSCALE:GREGORIAN",
-         f"X-WR-CALNAME:ITECH 1 - {label}", f"X-WR-TIMEZONE:{TZ}", "REFRESH-INTERVAL;VALUE=DURATION:PT1H", "X-PUBLISHED-TTL:PT1H",
+         f"X-WR-CALNAME:ITECH 1 - {group}", f"X-WR-TIMEZONE:{TZ}", "REFRESH-INTERVAL;VALUE=DURATION:PT1H", "X-PUBLISHED-TTL:PT1H",
          VTZ]
     n = matched = need = 0
     for ev in events:
         if group not in ev["groups"]:
             continue
-        gs = ev["subs"][group]
-        if sub and sub not in gs:
-            continue
         lines = [l.strip() for l in ev["text"].split("\n") if l.strip()]
         title = re.sub(r"\s+", " ", lines[0]) if lines else "Cours"
         desc = [re.sub(r"\s+", " ", l) for l in lines[1:]]
-        if not sub and len(gs) == 1:
-            desc.append(f"Sous-groupe {next(iter(gs))} uniquement")
-        rooms = find_rooms(ev, group, rooms_by_date, sub)
+        if ev["partial"]:
+            desc.append("Une partie du groupe seulement (colonne A ou B dans le planning)")
+        rooms = find_rooms(ev, group, rooms_by_date)
         loc = ""
         if not ev["allday"]:
             if rooms:
@@ -277,7 +255,7 @@ def build_ics(events, group, rooms_by_date, sub=None):
                                                          for r in rooms))
             if not norm(title).startswith("e learning") and not re.match(r"\d{1,2}h", title):
                 need += 1; matched += bool(rooms)
-        key = f"{label}|{ev['date']}|{ev.get('start','allday')}|{norm(title)}"
+        key = f"{group}|{ev['date']}|{ev.get('start','allday')}|{norm(title)}"
         uid = hashlib.sha1(key.encode()).hexdigest()[:20] + "@planning-itech"
         L += ["BEGIN:VEVENT", f"UID:{uid}", f"DTSTAMP:{stamp}", f"SUMMARY:{esc(title)}"]
         if ev["allday"]:
@@ -314,7 +292,6 @@ def main():
     ap.add_argument("planning", nargs="?"); ap.add_argument("salles", nargs="?")
     ap.add_argument("--download", action="store_true", help="télécharge les Google Sheets publics")
     ap.add_argument("--groupe", choices=list(GROUP_COLS)); ap.add_argument("--tous", action="store_true")
-    ap.add_argument("--sous-groupe", choices=["A", "B"], dest="sub")
     ap.add_argument("-o", "--out"); ap.add_argument("--outdir", default=".")
     a = ap.parse_args()
     if a.download:
@@ -329,11 +306,9 @@ def main():
     for r in read_rooms(a.salles):
         by_date[r["date"]].append(r)
     os.makedirs(a.outdir, exist_ok=True)
-    targets = ([(g, sb) for g in GROUP_COLS for sb in (None, "A", "B")] if a.tous
-               else [(a.groupe or "G1", a.sub)])
-    for g, sb in targets:
-        ics, n, m, need = build_ics(events, g, by_date, sb)
-        out = a.out if (a.out and not a.tous) else os.path.join(a.outdir, f"itech1_{g}{sb or ''}.ics")
+    for g in (GROUP_COLS if a.tous else [a.groupe or "G1"]):
+        ics, n, m, need = build_ics(events, g, by_date)
+        out = a.out if (a.out and not a.tous) else os.path.join(a.outdir, f"itech1_{g}.ics")
         with open(out, "w", encoding="utf-8", newline="") as f:
             f.write(ics)
         print(f"{out} : {n} événements, salle trouvée pour {m}/{need} cours")
