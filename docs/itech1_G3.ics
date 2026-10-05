@@ -339,9 +339,8 @@ DTSTAMP:20260901T000000Z
 SUMMARY:Anglais
 DTSTART;TZID=Europe/Paris:20261005T130000
 DTEND;TZID=Europe/Paris:20261005T150000
-LOCATION:Salle 201 / Salle 206
-DESCRIPTION:S.Guilbaud\nL Scalone\nGroupes A et B\nSalles : Salle 201 (Sca
- lone) \; Salle 206 (Guilbaud)
+LOCATION:Salle 206
+DESCRIPTION:S.Guilbaud\nL Scalone\nGroupes A et B
 END:VEVENT
 BEGIN:VEVENT
 UID:fe8d4b93978d850cf9d0@planning-itech
