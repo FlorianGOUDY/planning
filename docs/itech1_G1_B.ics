@@ -1089,9 +1089,9 @@ DTSTAMP:20260901T000000Z
 SUMMARY:Anglais
 DTSTART;TZID=Europe/Paris:20261021T100000
 DTEND;TZID=Europe/Paris:20261021T120000
-LOCATION:Salle 203 / Salle 206
-DESCRIPTION:C.Vodislav\nE.Ziavra\nSalles : Salle 203 (Ziavra) \; Salle 206
-  (Vodislav)
+LOCATION:Amphithéâtre / Salle 203
+DESCRIPTION:C.Vodislav\nE.Ziavra\nSalles : Amphithéâtre (Vodislav) \; Sa
+ lle 203 (Ziavra)
 END:VEVENT
 BEGIN:VEVENT
 UID:077cb3e5219304ee33d1@planning-itech
