@@ -877,9 +877,9 @@ DTSTAMP:20260901T000000Z
 SUMMARY:Anglais
 DTSTART;TZID=Europe/Paris:20261201T100000
 DTEND;TZID=Europe/Paris:20261201T120000
-LOCATION:Salle 203 / Salle 206
-DESCRIPTION:C.Vodislav\nK. Walden\nSalles : Salle 203 (Vodislav) \; Salle 
- 206 (Walden)
+LOCATION:Amphithéâtre / Salle 206
+DESCRIPTION:C.Vodislav\nK. Walden\nSalles : Amphithéâtre (Vodislav) \; S
+ alle 206 (Walden)
 END:VEVENT
 BEGIN:VEVENT
 UID:f2940b04a9ba33922d27@planning-itech
