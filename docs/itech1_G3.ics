@@ -894,6 +894,15 @@ DESCRIPTION:Correction détaillée partie"Reading" (Optionnel)\nGroupes A
  et B
 END:VEVENT
 BEGIN:VEVENT
+UID:e780670d82ffd49cb286@planning-itech
+DTSTAMP:20260901T000000Z
+SUMMARY:17h00-19h00 - Soutien TOEIC / C.Garrioch
+DTSTART;TZID=Europe/Paris:20261123T170000
+DTEND;TZID=Europe/Paris:20261123T190000
+DESCRIPTION:Correction détaillée partie"Reading" (Optionnel)\nGroupes A 
+ et B
+END:VEVENT
+BEGIN:VEVENT
 UID:5fb2be4d961e4247cd6e@planning-itech
 DTSTAMP:20260901T000000Z
 SUMMARY:17h00-19h00 - Soutien TOEIC / C.Garrioch

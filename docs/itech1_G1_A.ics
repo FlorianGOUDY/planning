@@ -737,6 +737,14 @@ DTEND;TZID=Europe/Paris:20261116T190000
 DESCRIPTION:Correction détaillée partie"Reading" (Optionnel)
 END:VEVENT
 BEGIN:VEVENT
+UID:35c336e7f1d157491e8e@planning-itech
+DTSTAMP:20260901T000000Z
+SUMMARY:17h00-19h00 - Soutien TOEIC / C.Garrioch
+DTSTART;TZID=Europe/Paris:20261123T170000
+DTEND;TZID=Europe/Paris:20261123T190000
+DESCRIPTION:Correction détaillée partie"Reading" (Optionnel)
+END:VEVENT
+BEGIN:VEVENT
 UID:b1ef4f6ec1b6d65bc4bc@planning-itech
 DTSTAMP:20260901T000000Z
 SUMMARY:17h00-19h00 - Soutien TOEIC / C.Garrioch
@@ -1521,8 +1529,8 @@ DTSTAMP:20260901T000000Z
 SUMMARY:Anglais
 DTSTART;TZID=Europe/Paris:20261216T100000
 DTEND;TZID=Europe/Paris:20261216T120000
-LOCATION:Salle 204 / Salle 205
-DESCRIPTION:C.Vodislav\nE.Ziavra\nSalles : Salle 204 (Vodislav) \; Salle 2
+LOCATION:Salle 200 / Salle 205
+DESCRIPTION:C.Vodislav\nE.Ziavra\nSalles : Salle 200 (Vodislav) \; Salle 2
  05 (Ziavra)
 END:VEVENT
 BEGIN:VEVENT

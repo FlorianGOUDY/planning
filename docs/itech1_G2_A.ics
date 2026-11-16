@@ -726,6 +726,14 @@ DTEND;TZID=Europe/Paris:20261116T190000
 DESCRIPTION:Correction détaillée partie"Reading" (Optionnel)
 END:VEVENT
 BEGIN:VEVENT
+UID:e16ee60b4d348b05d0d4@planning-itech
+DTSTAMP:20260901T000000Z
+SUMMARY:17h00-19h00 - Soutien TOEIC / C.Garrioch
+DTSTART;TZID=Europe/Paris:20261123T170000
+DTEND;TZID=Europe/Paris:20261123T190000
+DESCRIPTION:Correction détaillée partie"Reading" (Optionnel)
+END:VEVENT
+BEGIN:VEVENT
 UID:95d819c41647d277937b@planning-itech
 DTSTAMP:20260901T000000Z
 SUMMARY:17h00-19h00 - Soutien TOEIC / C.Garrioch
@@ -1014,9 +1022,9 @@ DTSTAMP:20260901T000000Z
 SUMMARY:Anglais
 DTSTART;TZID=Europe/Paris:20261117T100000
 DTEND;TZID=Europe/Paris:20261117T120000
-LOCATION:Salle 201 / Salle 207
-DESCRIPTION:C.Vodislav\nK. Walden\nSalles : Salle 201 (Walden) \; Salle 20
- 7 (Vodislav)
+LOCATION:Amphithéâtre / Salle 201
+DESCRIPTION:C.Vodislav\nK. Walden\nSalles : Amphithéâtre (Vodislav) \; S
+ alle 201 (Walden)
 END:VEVENT
 BEGIN:VEVENT
 UID:45c9ac3235b92cce472b@planning-itech
